@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="だがしやマスター">
+<meta name="theme-color" content="#D4451A">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>めざせ！おかいもの名人～だがしやマスター～</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN",Meiryo,sans-serif}
+
+/* ===== START SCREEN ===== */
+.start-screen{position:fixed;inset:0;background:linear-gradient(135deg,#F5E6D0 0%,#FFEEDD 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity 0.5s,transform 0.5s}
+.start-screen.hide{opacity:0;transform:scale(1.05);pointer-events:none}
+.start-title{font-size:clamp(24px,6vw,48px);font-weight:700;color:#D4451A;margin-bottom:8px;text-align:center}
+.start-sub{font-size:clamp(12px,2.5vw,18px);color:#8B6B4A;margin-bottom:32px;text-align:center}
+.start-btn{background:#D4451A;color:#fff;border:none;border-radius:50px;padding:16px 48px;font-size:clamp(16px,3vw,22px);font-weight:600;cursor:pointer;animation:pulse 2s ease infinite;letter-spacing:2px}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.start-coins{margin-top:24px;display:flex;gap:12px}
+.start-coins span{font-size:clamp(20px,4vw,36px);animation:float 3s ease infinite}
+.start-coins span:nth-child(2){animation-delay:0.3s}
+.start-coins span:nth-child(3){animation-delay:0.6s}
+.start-coins span:nth-child(4){animation-delay:0.9s}
+.start-coins span:nth-child(5){animation-delay:1.2s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* ===== MAIN APP ===== */
+.app{width:100%;height:100%;background:#F5E6D0;display:none;flex-direction:column;position:relative;overflow:hidden}
+.app.active{display:flex}
+
+/* Header bar */
+.hbar{background:#8B6B4A;padding:4px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hbar-title{font-size:13px;font-weight:600;color:#F5E6D0;letter-spacing:1px}
+.hbar-stats{display:flex;gap:12px;align-items:center}
+.hbar-stat{font-size:11px;color:#D4A76A;display:flex;align-items:center;gap:4px}
+.hbar-stat b{color:#F5E6D0}
+.hbar-lvl{background:#D4451A;color:#fff;font-size:10px;font-weight:600;padding:2px 10px;border-radius:10px}
+
+/* Step guide */
+.step-guide{font-size:clamp(11px,2vw,14px);color:#5A4030;text-align:center;padding:4px 8px;background:#FFF3E5;font-weight:600;flex-shrink:0;border-bottom:1px solid #E8D5C0}
+.step-guide .step-icon{margin-right:4px}
+
+/* Shop area */
+.shop-area{flex:1;display:flex;padding:8px 12px;gap:10px;min-height:0}
+.shelf{flex:1;background:#8B6B4A;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:4px;box-shadow:inset 0 2px 0 #7A5C3E}
+.shelf-label{font-size:11px;font-weight:500;color:#F5E6D0;text-align:center;letter-spacing:1px}
+.shelf-items{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.item{background:#FFF9F0;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;padding:3px 2px;border:1.5px solid transparent;position:relative}
+.item:hover{border-color:#D4A76A;box-shadow:0 2px 8px rgba(139,107,74,0.25)}
+.item:active{border-color:#D4451A;box-shadow:0 1px 4px rgba(212,69,26,0.3)}
+.item-e{font-size:clamp(16px,3vw,24px);line-height:1.1}
+.item-n{font-size:clamp(7px,1.2vw,10px);color:#5A4030;font-weight:500;white-space:nowrap}
+.item-p{font-size:clamp(8px,1.3vw,11px);font-weight:600;color:#D4451A;background:#FFEEDD;border-radius:8px;padding:0 5px;margin-top:1px}
+.side-panel{width:clamp(160px,25vw,230px);display:flex;flex-direction:column;gap:6px}
+.cart{background:#FFF9F0;border-radius:8px;padding:8px;flex:1;display:flex;flex-direction:column;border:1.5px dashed #C4A882;min-height:0}
+.cart-title{font-size:clamp(12px,2vw,14px);font-weight:600;color:#8B6B4A;text-align:center;margin-bottom:4px}
+.cart-items{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
+.cart-item{display:flex;align-items:center;gap:6px;font-size:clamp(11px,1.8vw,13px);color:#5A4030;padding:4px 6px;background:#FFF3E5;border-radius:6px;cursor:pointer;transition:background 0.15s;flex-shrink:0}
+.cart-item:hover{background:#FFE0C4}
+.cart-item .ci-x{color:#caa;font-size:12px;margin-left:auto;padding:2px}
+.total-box{background:#D4451A;border-radius:10px;padding:8px 10px;text-align:center}
+.total-label{font-size:clamp(10px,1.5vw,12px);color:#FFD0B8;font-weight:500}
+.total-val{font-size:clamp(20px,3.5vw,28px);font-weight:700;color:#fff}
+.total-val.bump{animation:bump 0.3s ease}
+@keyframes bump{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.buy-btn{background:#D4451A;color:#fff;border:none;border-radius:12px;padding:14px 0;font-size:clamp(14px,2.5vw,18px);font-weight:700;cursor:pointer;width:100%;transition:transform 0.1s;letter-spacing:1px;box-shadow:0 3px 8px rgba(212,69,26,0.3)}
+.buy-btn:active{transform:scale(0.96)}
+.buy-btn:disabled{background:#CCC;cursor:default;transform:none;box-shadow:none}
+.buy-btn:not(:disabled){animation:btnPulse 2s ease infinite}
+@keyframes btnPulse{0%,100%{box-shadow:0 3px 8px rgba(212,69,26,0.3)}50%{box-shadow:0 3px 16px rgba(212,69,26,0.5)}}
+
+/* Wallet */
+.wallet-area{background:#6B3A1F;padding:10px 16px 8px;display:flex;align-items:center;gap:12px;position:relative;flex-shrink:0;border-radius:12px 12px 0 0}
+.wallet-flap{position:absolute;top:-10px;left:0;right:0;height:12px;background:#7D4A2A;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center}
+.wallet-flap span{font-size:9px;color:#D4A76A;letter-spacing:2px;font-weight:500}
+.wallet-label{font-size:11px;color:#D4A76A;font-weight:500;min-width:56px;text-align:center}
+.coins-row{flex:1;display:flex;gap:clamp(4px,1vw,8px);align-items:center;justify-content:center;flex-wrap:wrap}
+.coin{border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.12s;font-weight:600;user-select:none;position:relative}
+.coin:hover{transform:scale(1.12)}
+.coin:active{transform:scale(0.88)}
+.coin .cv{line-height:1}
+.coin .cy{font-size:7px;line-height:1}
+.coin.c1{background:linear-gradient(145deg,#D4BC9A,#B09070);color:#5A3A20;border:2px solid #A08060;width:34px;height:34px;font-size:11px}
+.coin.c5{background:linear-gradient(145deg,#D9B860,#B09030);color:#5A4010;border:2px solid #A88A30;width:36px;height:36px;font-size:11px}
+.coin.c10{background:linear-gradient(145deg,#DD9040,#B87028);color:#4A2A10;border:2px solid #A66520;width:38px;height:38px;font-size:12px}
+.coin.c50{background:linear-gradient(145deg,#F0F0F0,#C8C8C8);color:#444;border:2px solid #B8B8B8;width:42px;height:42px;font-size:12px}
+.coin.c50::after{content:"";width:6px;height:6px;border-radius:50%;border:1.5px solid #B0B0B0;position:absolute;top:5px}
+.coin.c100{background:linear-gradient(145deg,#F4F4F4,#D0D0D0);color:#333;border:2px solid #C0C0C0;width:42px;height:42px;font-size:12px}
+.coin.c500{background:linear-gradient(145deg,#F8EE9C,#D8C860);color:#4A3A10;border:2.5px solid #C8B840;width:48px;height:48px;font-size:13px}
+.coin .cc{position:absolute;top:-5px;right:-5px;background:#D4451A;color:#fff;font-size:9px;font-weight:600;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid #6B3A1F}
+
+/* Pay view */
+.pay-back{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 4px}
+.pay-back-btn{background:#8B6B4A;color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:clamp(12px,2vw,15px);font-weight:700;cursor:pointer;writing-mode:vertical-rl;letter-spacing:2px;transition:transform 0.1s,background 0.15s;min-height:80px}
+.pay-back-btn:hover{background:#7A5C3E}
+.pay-back-btn:active{transform:scale(0.96)}
+.pay-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.pay-center .label{font-size:13px;color:#8B6B4A}
+.pay-items{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.pay-price{font-size:clamp(20px,4vw,28px);font-weight:600;color:#D4451A}
+.obaa{background:#FFF3E5;border-radius:12px;padding:8px 12px;margin-top:4px;display:flex;align-items:center;gap:8px;max-width:260px;opacity:0;transition:opacity 0.4s}
+.obaa.show{opacity:1}
+.obaa .face{font-size:28px;flex-shrink:0}
+.obaa .speech{font-size:11px;color:#5A4030;line-height:1.4}
+.tray-area{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:clamp(160px,22vw,210px)}
+.tray-label{font-size:10px;color:#8B6B4A;font-weight:500}
+.tray{background:#FFF9F0;border-radius:12px;min-width:170px;min-height:52px;padding:8px 12px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;border:2px dashed #C4A882;transition:border-color 0.3s,box-shadow 0.3s}
+.tray.glow-w{border-color:#F5A623;box-shadow:0 0 12px rgba(245,166,35,0.2)}
+.tray.glow-g{border-color:#4CAF50;box-shadow:0 0 16px rgba(76,175,80,0.3)}
+.tray.glow-r{border-color:#E24B4A;box-shadow:0 0 12px rgba(226,75,74,0.2)}
+.tc{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;cursor:pointer;transition:transform 0.1s;animation:coinDrop 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+.tc:hover{transform:scale(1.15)}
+@keyframes coinDrop{0%{opacity:0;transform:translateY(-18px) scale(0.5)}60%{transform:translateY(2px) scale(1.05)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.tc.c1{background:linear-gradient(145deg,#D4BC9A,#B09070);color:#5A3A20;border:1.5px solid #A08060}
+.tc.c5{background:linear-gradient(145deg,#D9B860,#B09030);color:#5A4010;border:1.5px solid #A88A30}
+.tc.c10{background:linear-gradient(145deg,#DD9040,#B87028);color:#4A2A10;border:1.5px solid #A66520}
+.tc.c50{background:linear-gradient(145deg,#F0F0F0,#C8C8C8);color:#444;border:1.5px solid #B8B8B8}
+.tc.c100{background:linear-gradient(145deg,#F4F4F4,#D0D0D0);color:#333;border:1.5px solid #C0C0C0}
+.tc.c500{background:linear-gradient(145deg,#F8EE9C,#D8C860);color:#4A3A10;border:1.5px solid #C8B840}
+.tray-sum{font-size:16px;font-weight:600;color:#FFF3E5}
+.tray-sum .ok{color:#66BB6A}
+.tray-sum .over{color:#EF5350}
+.tray-sum .warm{color:#FFC107}
+.tray-sum.bump{animation:bump 0.3s ease}
+.btn-row{display:flex;gap:8px;width:100%}
+.pbtn{border-radius:12px;padding:12px 24px;font-size:clamp(14px,2.5vw,18px);font-weight:700;cursor:pointer;border:none;transition:transform 0.1s;letter-spacing:1px}
+.pbtn:active{transform:scale(0.96)}
+.pbtn.go{background:#2E7D32;color:#fff;flex:1;box-shadow:0 3px 8px rgba(46,125,50,0.3)}
+.pbtn.go:not(:disabled){animation:goBtnPulse 2s ease infinite}
+@keyframes goBtnPulse{0%,100%{box-shadow:0 3px 8px rgba(46,125,50,0.3)}50%{box-shadow:0 3px 16px rgba(46,125,50,0.5)}}
+.pbtn.go:disabled{background:#999;cursor:default;box-shadow:none}
+.pbtn.bk{background:#8B6B4A;color:#fff}
+
+/* Overlay */
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:10;animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.obox{background:#FFF9F0;border-radius:20px;padding:24px 32px;text-align:center;max-width:340px;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes popIn{from{transform:scale(0.7);opacity:0}to{transform:scale(1);opacity:1}}
+.obox .emo{font-size:48px;margin-bottom:6px}
+.obox .msg{font-size:18px;font-weight:600;color:#5A4030;margin-bottom:4px}
+.obox .sub{font-size:13px;color:#8B6B4A;margin-bottom:10px}
+.obox .bonus{font-size:14px;color:#F5A623;font-weight:600;margin-bottom:12px;animation:sparkle 1s ease infinite alternate}
+@keyframes sparkle{from{text-shadow:0 0 4px rgba(245,166,35,0.3)}to{text-shadow:0 0 12px rgba(245,166,35,0.6)}}
+.obox .stars{margin-bottom:8px}
+.obox .stars span{font-size:22px;display:inline-block;animation:starPop 0.4s ease backwards}
+.obox .stars span:nth-child(2){animation-delay:0.1s}
+.obox .stars span:nth-child(3){animation-delay:0.2s}
+.obox .stars span:nth-child(4){animation-delay:0.3s}
+.obox .stars span:nth-child(5){animation-delay:0.4s}
+@keyframes starPop{from{transform:scale(0) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.obox button{background:#D4451A;color:#fff;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;margin:0 4px;transition:transform 0.1s}
+.obox button:active{transform:scale(0.96)}
+.particles{position:absolute;inset:0;pointer-events:none;z-index:11;overflow:hidden}
+.particle{position:absolute;border-radius:50%;animation:fly 1.2s ease-out forwards}
+@keyframes fly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div class="start-screen" id="startScreen">
+  <div class="start-title">めざせ！おかいもの名人</div>
+  <div class="start-sub">～だがしやマスター～</div>
+  <button class="start-btn" onclick="startGame()">タップして はじめる</button>
+  <div class="start-coins">
+    <span>🍬</span><span>🍘</span><span>🥤</span><span>🪀</span><span>🍫</span>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="app">
+  <div class="hbar">
+    <span class="hbar-title">だがしやマスター</span>
+    <div class="hbar-stats">
+      <span class="hbar-stat">ぴったり: <b id="hPerfect">0</b>かい</span>
+      <span class="hbar-stat">れんぞく: <b id="hStreak">0</b></span>
+      <span class="hbar-lvl" id="hLvl">Lv.1 はじめて</span>
+    </div>
+  </div>
+
+  <div class="step-guide" id="shopGuide"><span class="step-icon">🍭</span>すきな おかしを タップして えらぼう！</div>
+  <div id="shopV" class="shop-area">
+    <div class="shelf"><div class="shelf-label">おかし</div><div class="shelf-items" id="s1"></div></div>
+    <div class="shelf"><div class="shelf-label">のみもの・おもちゃ</div><div class="shelf-items" id="s2"></div></div>
+    <div class="side-panel">
+      <div class="cart"><div class="cart-title">🛒 おかいものカゴ</div><div class="cart-items" id="ci"></div></div>
+      <div class="total-box"><div class="total-label">ごうけい</div><div class="total-val" id="tv">0えん</div></div>
+      <button class="buy-btn" id="bb" disabled onclick="goToPay()">おかいけいへ すすむ ➜</button>
+    </div>
+  </div>
+
+  <div id="payGuide" class="step-guide hidden"><span class="step-icon">💰</span>おさいふから おかねを タップして トレイにのせよう！</div>
+  <div id="payV" class="shop-area hidden">
+    <div class="pay-back">
+      <button class="pay-back-btn" onclick="goToShop()">← もどる</button>
+    </div>
+    <div class="pay-center">
+      <div class="label">おかいもの</div>
+      <div class="pay-items" id="pi"></div>
+      <div class="pay-price" id="pp">0えん</div>
+      <div class="obaa" id="ob"><span class="face">👵</span><span class="speech" id="os"></span></div>
+    </div>
+    <div class="tray-area">
+      <div class="tray-label">⬇ おしはらいトレイ ⬇</div>
+      <div class="tray" id="tray"></div>
+      <div class="tray-sum" id="ts">トレイのおかね: <span id="tsv">0</span>えん</div>
+      <button class="pbtn go" id="pc" style="width:100%" disabled onclick="confirmPay()">💰 はらう！</button>
+    </div>
+  </div>
+
+  <div class="wallet-area">
+    <div class="wallet-flap"><span>おさいふ</span></div>
+    <div class="wallet-label" id="wt">500えん</div>
+    <div class="coins-row" id="cr"></div>
+  </div>
+
+  <div class="overlay hidden" id="ov"><div class="particles" id="pt"></div><div class="obox" id="rb"></div></div>
+</div>
+
+<script>
+// ===== AUDIO =====
+var audioCtx = null;
+function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+function playTone(freq, dur, type) {
+  if (!audioCtx) return;
+  var osc = audioCtx.createOscillator();
+  var gain = audioCtx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + dur);
+}
+function seCharin(val) {
+  var freq = val >= 100 ? 1200 : val >= 50 ? 1000 : val >= 10 ? 800 : 600;
+  playTone(freq, 0.15, 'triangle');
+  setTimeout(function(){ playTone(freq * 1.5, 0.1, 'triangle'); }, 60);
+}
+function seCartAdd() { playTone(660, 0.1, 'sine'); }
+function sePerfect() {
+  [523, 659, 784, 1047].forEach(function(f, i) {
+    setTimeout(function(){ playTone(f, 0.2, 'sine'); }, i * 100);
+  });
+}
+function seResult() { playTone(523, 0.15, 'sine'); setTimeout(function(){ playTone(659, 0.2, 'sine'); }, 120); }
+
+// ===== DATA =====
+var ITEMS = [
+  {n:"まるまるラムネ",e:"\uD83C\uDF6C",p:10,s:1},{n:"もちもちグミ",e:"\uD83D\uDFE2",p:20,s:1},
+  {n:"ぱりぱりせんべい",e:"\uD83C\uDF58",p:30,s:1},{n:"にじいろガム",e:"\uD83E\uDEE7",p:50,s:1},
+  {n:"チョコバー",e:"\uD83C\uDF6B",p:40,s:1},{n:"きなこ棒",e:"\uD83E\uDD62",p:10,s:1},
+  {n:"ふわふわソーダ",e:"\uD83E\uDD64",p:30,s:2},{n:"フルーツあめ",e:"\uD83C\uDF4E",p:20,s:2},
+  {n:"くるくるヨーヨー",e:"\uD83E\uDE80",p:50,s:2},{n:"ぷちぷちスライム",e:"\uD83D\uDFE3",p:60,s:2},
+  {n:"りんごジュース",e:"\uD83E\uDDC3",p:40,s:2},{n:"ミニけん玉",e:"\uD83D\uDD34",p:80,s:2}
+];
+var COINS = [{v:1,c:"c1"},{v:5,c:"c5"},{v:10,c:"c10"},{v:50,c:"c50"},{v:100,c:"c100"},{v:500,c:"c500"}];
+var LEVELS = [
+  {name:"Lv.1 はじめて",budget:100,need:0},
+  {name:"Lv.2 なれてきた",budget:300,need:5},
+  {name:"Lv.3 いっぱし",budget:500,need:15},
+  {name:"Lv.4 おかいものめいじん",budget:800,need:30},
+  {name:"Lv.5 でんせつのおきゃくさん",budget:1000,need:50}
+];
+
+// ===== STATE =====
+var W = {}, cart = [], tray = [], mode = "shop", streak = 0;
+var save = loadSave();
+
+function defaultSave() { return { perfectTotal: 0, bestStreak: 0, level: 0, collection: [], lastLoginDate: null, bonusMoney: 0 }; }
+function loadSave() {
+  try { var d = JSON.parse(localStorage.getItem('dagashi_save')); return d || defaultSave(); }
+  catch(e) { return defaultSave(); }
+}
+function writeSave() { try { localStorage.setItem('dagashi_save', JSON.stringify(save)); } catch(e) {} }
+
+function getLvl() { return LEVELS[save.level] || LEVELS[0]; }
+function checkLevelUp() {
+  for (var i = LEVELS.length - 1; i >= 0; i--) {
+    if (save.perfectTotal >= LEVELS[i].need) { save.level = i; break; }
+  }
+}
+
+// ===== DAILY BONUS =====
+function getToday() {
+  var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function isYesterday(dateStr) {
+  if (!dateStr) return false;
+  var yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+  var y = yesterday.getFullYear() + '-' + String(yesterday.getMonth()+1).padStart(2,'0') + '-' + String(yesterday.getDate()).padStart(2,'0');
+  return dateStr === y;
+}
+function checkDailyBonus() {
+  var today = getToday();
+  if (save.lastLoginDate === today) return;
+  if (isYesterday(save.lastLoginDate)) {
+    save.bonusMoney = (save.bonusMoney || 0) + 50;
+  }
+  save.lastLoginDate = today;
+  writeSave();
+}
+
+// ===== INIT =====
+function startGame() {
+  initAudio();
+  checkDailyBonus();
+  document.getElementById('startScreen').classList.add('hide');
+  setTimeout(function(){ document.getElementById('startScreen').style.display = 'none'; }, 500);
+  document.getElementById('app').classList.add('active');
+  initWallet();
+  renderShelves(); renderW(); updWT(); renderCart(); renderTray(); updHeader();
+}
+
+function initWallet() {
+  var lvl = getLvl();
+  W = {};
+  var b = lvl.budget + (save.bonusMoney || 0);
+  if (save.level === 0) {
+    W[50] = 1; W[10] = 5; W[5] = 0; W[1] = 0; W[100] = 0; W[500] = 0;
+    var rest = b - 100;
+    var coins = [500,100,50,10,5,1];
+    coins.forEach(function(c){ W[c] = (W[c] || 0) + Math.floor(rest / c); rest = rest % c; });
+  } else {
+    var coins = [500,100,50,10,5,1];
+    coins.forEach(function(c){ W[c] = Math.floor(b / c); b = b % c; });
+    if (W[100] > 2) { W[100] -= 1; W[50] += 2; }
+    if (W[50] > 2) { W[50] -= 1; W[10] += 5; }
+    if (W[10] > 3) { W[10] -= 2; W[5] += 2; W[1] += 10; }
+  }
+}
+
+function updHeader() {
+  document.getElementById('hPerfect').textContent = save.perfectTotal;
+  document.getElementById('hStreak').textContent = streak;
+  document.getElementById('hLvl').textContent = getLvl().name;
+}
+
+function renderShelves() {
+  var a = document.getElementById("s1"), b = document.getElementById("s2");
+  a.innerHTML = ""; b.innerHTML = "";
+  ITEMS.forEach(function(item, i) {
+    var el = document.createElement("div"); el.className = "item";
+    el.innerHTML = '<span class="item-e">' + item.e + '</span><span class="item-n">' + item.n + '</span><span class="item-p">' + item.p + 'えん</span>';
+    el.onclick = function() { addCart(i); };
+    (item.s === 1 ? a : b).appendChild(el);
+  });
+}
+
+function addCart(i) {
+  var t = 0; cart.forEach(function(c) { t += ITEMS[c].p; });
+  if (t + ITEMS[i].p > getLvl().budget) return;
+  cart.push(i);
+  seCartAdd();
+  renderCart();
+  var el = document.getElementById("tv"); el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+}
+
+function renderCart() {
+  var el = document.getElementById("ci"); el.innerHTML = "";
+  cart.forEach(function(idx, ci) {
+    var d = document.createElement("div"); d.className = "cart-item";
+    d.innerHTML = '<span>' + ITEMS[idx].e + '</span><span>' + ITEMS[idx].n + '</span><span class="ci-x">\u2715</span>';
+    d.onclick = function() { cart.splice(ci, 1); renderCart(); };
+    el.appendChild(d);
+  });
+  var t = 0; cart.forEach(function(c) { t += ITEMS[c].p; });
+  document.getElementById("tv").textContent = t + "えん";
+  document.getElementById("bb").disabled = cart.length === 0;
+  document.getElementById("shopGuide").innerHTML = cart.length === 0
+    ? '<span class="step-icon">🍭</span>すきな おかしを タップして えらぼう！'
+    : '<span class="step-icon">🛒</span>えらんだら「おかいけいへ すすむ」を おそう！ ⬇';
+}
+
+function renderW() {
+  var row = document.getElementById("cr"); row.innerHTML = "";
+  COINS.forEach(function(c) {
+    if (!W[c.v] || W[c.v] <= 0) return;
+    var el = document.createElement("div"); el.className = "coin " + c.c;
+    el.innerHTML = '<span class="cv">' + c.v + '</span><span class="cy">えん</span>' + (W[c.v] > 1 ? '<span class="cc">' + W[c.v] + '</span>' : '');
+    el.onclick = function() {
+      if (mode === "pay" && W[c.v] > 0) {
+        W[c.v]--; tray.push(c.v);
+        seCharin(c.v);
+        renderW(); renderTray(); updWT(); updOb();
+      }
+    };
+    row.appendChild(el);
+  });
+}
+
+function updWT() {
+  var t = 0; COINS.forEach(function(c) { t += c.v * (W[c.v] || 0); });
+  document.getElementById("wt").textContent = t + "えん";
+}
+
+function renderTray() {
+  var el = document.getElementById("tray"); el.innerHTML = "";
+  if (tray.length === 0) el.innerHTML = '<span style="font-size:11px;color:#C4A882;">ここに おかねを おいてね</span>';
+  tray.forEach(function(val, i) {
+    var cls = ""; COINS.forEach(function(c) { if (c.v === val) cls = c.c; });
+    var d = document.createElement("div"); d.className = "tc " + cls; d.textContent = val;
+    d.onclick = function() { tray.splice(i, 1); W[val]++; renderW(); renderTray(); updWT(); updOb(); };
+    el.appendChild(d);
+  });
+  var sum = 0; tray.forEach(function(v) { sum += v; });
+  var price = 0; cart.forEach(function(c) { price += ITEMS[c].p; });
+  var span = document.getElementById("tsv"); span.textContent = sum;
+  el.classList.remove("glow-w", "glow-g", "glow-r");
+  if (sum === price && sum > 0) { span.className = "ok"; el.classList.add("glow-g"); }
+  else if (sum > price) { span.className = "over"; el.classList.add("glow-r"); }
+  else if (sum > 0) { span.className = "warm"; el.classList.add("glow-w"); }
+  else { span.className = ""; }
+  document.getElementById("pc").disabled = sum < price;
+  var ts = document.getElementById("ts"); ts.classList.remove("bump"); void ts.offsetWidth; ts.classList.add("bump");
+}
+
+function updOb() {
+  var sum = 0; tray.forEach(function(v) { sum += v; });
+  var price = 0; cart.forEach(function(c) { price += ITEMS[c].p; });
+  var m = document.getElementById("ob"), sp = document.getElementById("os"), diff = price - sum;
+  if (sum === 0) { m.classList.remove("show"); return; }
+  if (sum === price) sp.textContent = "ぴったり！すごいねぇ！";
+  else if (sum > price) sp.textContent = "あらあら、ちょっとおおいかな？ もどしてみてね";
+  else if (diff <= 10) sp.textContent = "おっ、あとすこしだよ！";
+  else if (diff <= 30) sp.textContent = "いいかんじ！もうちょっとだね\u301C";
+  else { m.classList.remove("show"); return; }
+  m.classList.add("show");
+}
+
+function goToPay() {
+  mode = "pay";
+  document.getElementById("shopV").classList.add("hidden");
+  document.getElementById("shopGuide").classList.add("hidden");
+  document.getElementById("payV").classList.remove("hidden");
+  document.getElementById("payGuide").classList.remove("hidden");
+  tray = [];
+  var price = 0; cart.forEach(function(c) { price += ITEMS[c].p; });
+  document.getElementById("pp").textContent = price + "えん";
+  var pi = document.getElementById("pi"); pi.innerHTML = "";
+  cart.forEach(function(idx) { pi.innerHTML += '<span style="font-size:28px;">' + ITEMS[idx].e + '</span>'; });
+  document.getElementById("ob").classList.remove("show");
+  renderTray(); renderW();
+  setTimeout(function() {
+    document.getElementById("os").textContent = "いらっしゃい！おかねを えらんでね\u301C";
+    document.getElementById("ob").classList.add("show");
+  }, 400);
+}
+
+function goToShop() {
+  mode = "shop"; tray.forEach(function(v) { W[v]++; }); tray = [];
+  document.getElementById("shopV").classList.remove("hidden");
+  document.getElementById("shopGuide").classList.remove("hidden");
+  document.getElementById("payV").classList.add("hidden");
+  document.getElementById("payGuide").classList.add("hidden");
+  document.getElementById("ob").classList.remove("show");
+  renderW(); updWT();
+}
+
+function spawnP(perfect) {
+  var ct = document.getElementById("pt"); ct.innerHTML = "";
+  var cols = perfect ? ["#FFD700","#FF6B6B","#4CAF50","#42A5F5","#FF9800","#E040FB"] : ["#FFD700","#FFA726"];
+  var n = perfect ? 35 : 12;
+  for (var i = 0; i < n; i++) {
+    var p = document.createElement("div"); p.className = "particle";
+    var sz = Math.random() * 8 + 4, cx = 40 + Math.random() * 60, cy = 30 + Math.random() * 40;
+    var dx = (Math.random() - 0.5) * 300, dy = (Math.random() - 0.5) * 300;
+    p.style.cssText = "width:" + sz + "px;height:" + sz + "px;left:" + cx + "%;top:" + cy + "%;background:" + cols[i % cols.length] + ";--dx:" + dx + "px;--dy:" + dy + "px;animation-delay:" + Math.random() * 0.3 + "s";
+    ct.appendChild(p);
+  }
+}
+
+function confirmPay() {
+  var price = 0; cart.forEach(function(c) { price += ITEMS[c].p; });
+  var paid = 0; tray.forEach(function(v) { paid += v; });
+  var change = paid - price, perfect = change === 0;
+
+  cart.forEach(function(idx) {
+    if (save.collection.indexOf(idx) === -1) save.collection.push(idx);
+  });
+
+  if (perfect) {
+    streak++;
+    save.perfectTotal++;
+    if (streak > save.bestStreak) save.bestStreak = streak;
+    sePerfect();
+  } else {
+    streak = 0;
+    seResult();
+  }
+
+  checkLevelUp();
+  writeSave();
+
+  var box = document.getElementById("rb"), h = "";
+  if (perfect) {
+    var st = ""; for (var i = 0; i < Math.min(streak, 5); i++) st += "<span>\u2B50</span>";
+    h = '<div class="emo">\uD83C\uDF89</div><div class="msg">\u3074\u3063\u305F\u308A\uFF01\u3059\u3054\u3044\uFF01</div>';
+    if (streak >= 2) h += '<div class="stars">' + st + '</div>';
+    h += '<div class="sub">\u304A\u3064\u308A\u306A\u3057\u3067 \u304A\u304B\u3044\u3082\u306E \u3067\u304D\u305F\u3088\uFF01</div>';
+    if (streak >= 3) { h += '<div class="bonus">\uD83C\uDF1F ' + streak + '\u308C\u3093\u305E\u304F \u3074\u3063\u305F\u308A\uFF01 \u30DC\u30FC\u30CA\u30B9\u30B3\u30A4\u30F3 +10\u3048\u3093 \uD83C\uDF1F</div>'; W[10] = (W[10] || 0) + 1; }
+  } else {
+    h = '<div class="emo">\u2728</div><div class="msg">\u304A\u304B\u3044\u3082\u306E \u3067\u304D\u305F\u3088\uFF01</div><div class="sub">\u304A\u3064\u308A <b style="color:#D4451A;font-size:16px">' + change + '\u3048\u3093</b> \u3082\u3069\u3063\u3066\u304D\u305F\u3088</div>';
+    var ch = change;
+    [500,100,50,10,5,1].forEach(function(v) { while (ch >= v) { W[v] = (W[v] || 0) + 1; ch -= v; } });
+  }
+
+  h += '<button onclick="resetGame()">\u3064\u304E\u306E \u304A\u304B\u3044\u3082\u306E</button>';
+  box.innerHTML = h;
+  document.getElementById("ov").classList.remove("hidden");
+  spawnP(perfect);
+  cart = []; tray = [];
+}
+
+function resetGame() {
+  document.getElementById("ov").classList.add("hidden");
+  document.getElementById("pt").innerHTML = "";
+  mode = "shop";
+  document.getElementById("shopV").classList.remove("hidden");
+  document.getElementById("shopGuide").classList.remove("hidden");
+  document.getElementById("payV").classList.add("hidden");
+  document.getElementById("payGuide").classList.add("hidden");
+  document.getElementById("ob").classList.remove("show");
+  renderCart(); renderW(); updWT(); renderTray(); updHeader();
+}
+
+// ===== SERVICE WORKER =====
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(e) { console.log('SW registration failed:', e); });
+}
+</script>
+</body>
+</html>
