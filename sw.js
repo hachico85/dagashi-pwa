@@ -1,4 +1,4 @@
-var CACHE_NAME = 'dagashi-v2';
+var CACHE_NAME = 'dagashi-v3';
 var urlsToCache = [
   './',
   './index.html',

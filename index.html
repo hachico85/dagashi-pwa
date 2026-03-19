@@ -47,20 +47,24 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
 
 /* Shop area */
 .shop-area{flex:1;display:flex;padding:8px 12px;gap:10px;min-height:0}
-.shelf{flex:1;background:#8B6B4A;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:4px;box-shadow:inset 0 2px 0 #7A5C3E}
-.shelf-label{font-size:11px;font-weight:500;color:#F5E6D0;text-align:center;letter-spacing:1px}
-.shelf-items{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
-.item{background:#FFF9F0;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;padding:3px 2px;border:1.5px solid transparent;position:relative}
-.item:hover{border-color:#D4A76A;box-shadow:0 2px 8px rgba(139,107,74,0.25)}
-.item:active{border-color:#D4451A;box-shadow:0 1px 4px rgba(212,69,26,0.3)}
-.item-e{font-size:clamp(16px,3vw,24px);line-height:1.1}
-.item-n{font-size:clamp(7px,1.2vw,10px);color:#5A4030;font-weight:500;white-space:nowrap}
-.item-p{font-size:clamp(8px,1.3vw,11px);font-weight:600;color:#D4451A;background:#FFEEDD;border-radius:8px;padding:0 5px;margin-top:1px}
+.shelf{flex:1;background:#8B6B4A;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:4px;box-shadow:inset 0 2px 0 #7A5C3E;overflow:visible}
+.shelf-label{font-size:clamp(12px,2vw,15px);font-weight:500;color:#F5E6D0;text-align:center;letter-spacing:1px}
+.shelf-items{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;overflow:visible}
+.item{background:#FFF9F0;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;padding:6px 4px;border:2px solid transparent;position:relative;min-height:clamp(70px,11vw,90px)}
+.item:hover{border-color:#D4A76A;box-shadow:0 0 0 2px rgba(212,167,106,0.4),0 3px 10px rgba(139,107,74,0.3)}
+.item:active{border-color:#D4451A;box-shadow:0 0 0 2px rgba(212,69,26,0.3)}
+.item-e{font-size:clamp(22px,4vw,30px);line-height:1.1}
+.item-emoji-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.item-n{font-size:clamp(10px,1.8vw,14px);color:#5A4030;font-weight:500;white-space:nowrap}
+.item-p{font-size:clamp(11px,2vw,14px);font-weight:700;color:#fff;background:#D4451A;border-radius:8px;padding:2px 7px;margin-top:3px;letter-spacing:0.5px}
+.item-desc{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(60,30,10,0.82);color:#FFF9F0;font-size:clamp(10px,1.8vw,13px);width:max-content;max-width:130px;text-align:center;padding:7px 9px;line-height:1.5;border-radius:8px;opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:20;backdrop-filter:blur(2px)}
+.item-desc::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(60,30,10,0.82)}
+.item:hover .item-desc{opacity:1}
 .side-panel{width:clamp(160px,25vw,230px);display:flex;flex-direction:column;gap:6px}
 .cart{background:#FFF9F0;border-radius:8px;padding:8px;flex:1;display:flex;flex-direction:column;border:1.5px dashed #C4A882;min-height:0}
-.cart-title{font-size:clamp(12px,2vw,14px);font-weight:600;color:#8B6B4A;text-align:center;margin-bottom:4px}
+.cart-title{font-size:clamp(13px,2.2vw,16px);font-weight:600;color:#8B6B4A;text-align:center;margin-bottom:4px}
 .cart-items{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
-.cart-item{display:flex;align-items:center;gap:6px;font-size:clamp(11px,1.8vw,13px);color:#5A4030;padding:4px 6px;background:#FFF3E5;border-radius:6px;cursor:pointer;transition:background 0.15s;flex-shrink:0}
+.cart-item{display:flex;align-items:center;gap:6px;font-size:clamp(12px,2vw,15px);color:#5A4030;padding:5px 7px;background:#FFF3E5;border-radius:6px;cursor:pointer;transition:background 0.15s;flex-shrink:0}
 .cart-item:hover{background:#FFE0C4}
 .cart-item .ci-x{color:#caa;font-size:12px;margin-left:auto;padding:2px}
 .total-box{background:#D4451A;border-radius:10px;padding:8px 10px;text-align:center}
@@ -96,19 +100,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
 
 /* Pay view */
 .pay-back{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 4px}
-.pay-back-btn{background:#8B6B4A;color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:clamp(12px,2vw,15px);font-weight:700;cursor:pointer;writing-mode:vertical-rl;letter-spacing:2px;transition:transform 0.1s,background 0.15s;min-height:80px}
+.pay-back-btn{background:#8B6B4A;color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:clamp(13px,2.2vw,16px);font-weight:700;cursor:pointer;writing-mode:vertical-rl;letter-spacing:2px;transition:transform 0.1s,background 0.15s;min-height:80px}
 .pay-back-btn:hover{background:#7A5C3E}
 .pay-back-btn:active{transform:scale(0.96)}
 .pay-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
-.pay-center .label{font-size:13px;color:#8B6B4A}
+.pay-center .label{font-size:clamp(13px,2.2vw,16px);color:#8B6B4A}
 .pay-items{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.pay-price{font-size:clamp(20px,4vw,28px);font-weight:600;color:#D4451A}
+.pay-price{font-size:clamp(22px,4vw,30px);font-weight:600;color:#D4451A}
 .obaa{background:#FFF3E5;border-radius:12px;padding:8px 12px;margin-top:4px;display:flex;align-items:center;gap:8px;max-width:260px;opacity:0;transition:opacity 0.4s}
 .obaa.show{opacity:1}
-.obaa .face{font-size:28px;flex-shrink:0}
-.obaa .speech{font-size:11px;color:#5A4030;line-height:1.4}
+.obaa .face{font-size:clamp(24px,4vw,32px);flex-shrink:0}
+.obaa .speech{font-size:clamp(12px,2vw,15px);color:#5A4030;line-height:1.4}
 .tray-area{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:clamp(160px,22vw,210px)}
-.tray-label{font-size:10px;color:#8B6B4A;font-weight:500}
+.tray-label{font-size:clamp(11px,1.8vw,14px);color:#8B6B4A;font-weight:500}
 .tray{background:#FFF9F0;border-radius:12px;min-width:170px;min-height:52px;padding:8px 12px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;border:2px dashed #C4A882;transition:border-color 0.3s,box-shadow 0.3s}
 .tray.glow-w{border-color:#F5A623;box-shadow:0 0 12px rgba(245,166,35,0.2)}
 .tray.glow-g{border-color:#4CAF50;box-shadow:0 0 16px rgba(76,175,80,0.3)}
@@ -122,7 +126,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
 .tc.c50{background:linear-gradient(145deg,#F0F0F0,#C8C8C8);color:#444;border:1.5px solid #B8B8B8}
 .tc.c100{background:linear-gradient(145deg,#F4F4F4,#D0D0D0);color:#333;border:1.5px solid #C0C0C0}
 .tc.c500{background:linear-gradient(145deg,#F8EE9C,#D8C860);color:#4A3A10;border:1.5px solid #C8B840}
-.tray-sum{font-size:16px;font-weight:600;color:#FFF3E5}
+.tray-sum{font-size:clamp(14px,2.5vw,18px);font-weight:600;color:#FFF3E5}
 .tray-sum .ok{color:#66BB6A}
 .tray-sum .over{color:#EF5350}
 .tray-sum .warm{color:#FFC107}
@@ -258,12 +262,18 @@ function seResult() { playTone(523, 0.15, 'sine'); setTimeout(function(){ playTo
 
 // ===== DATA =====
 var ITEMS = [
-  {n:"まるまるラムネ",e:"\uD83C\uDF6C",p:10,s:1},{n:"もちもちグミ",e:"\uD83D\uDFE2",p:20,s:1},
-  {n:"ぱりぱりせんべい",e:"\uD83C\uDF58",p:30,s:1},{n:"にじいろガム",e:"\uD83E\uDEE7",p:50,s:1},
-  {n:"チョコバー",e:"\uD83C\uDF6B",p:40,s:1},{n:"きなこ棒",e:"\uD83E\uDD62",p:10,s:1},
-  {n:"ふわふわソーダ",e:"\uD83E\uDD64",p:30,s:2},{n:"フルーツあめ",e:"\uD83C\uDF4E",p:20,s:2},
-  {n:"くるくるヨーヨー",e:"\uD83E\uDE80",p:50,s:2},{n:"ぷちぷちスライム",e:"\uD83D\uDFE3",p:60,s:2},
-  {n:"りんごジュース",e:"\uD83E\uDDC3",p:40,s:2},{n:"ミニけん玉",e:"\uD83D\uDD34",p:80,s:2}
+  {n:"まるまるラムネ",e:"\uD83C\uDF6C",p:10,s:1,d:"シュワシュワあまずっぱい！まんまるのかたちがかわいいよ"},
+  {n:"もちもちグミ",e:"\uD83D\uDFE2",p:20,s:1,d:"もちもちぷにぷに！いろんなあじがあるよ"},
+  {n:"ぱりぱりせんべい",e:"\uD83C\uDF58",p:30,s:1,d:"ぱりっとやいたしょうゆあじ！おせんべいだよ"},
+  {n:"にじいろガム",e:"\uD83E\uDEE7",p:50,s:1,d:"5しょくのいろがついたガム！かんだらいろがかわるよ"},
+  {n:"チョコバー",e:"\uD83C\uDF6B",p:40,s:1,d:"あまくてこいチョコのぼう！ひとくちサイズだよ"},
+  {n:"きなこ棒",e:"\uD83E\uDD62",p:10,s:1,d:"きなこのやさしいあまさ！ほそながいかたちだよ"},
+  {n:"ふわふわソーダ",e:"\uD83E\uDD64",p:30,s:2,d:"ふわっとあわだつのみもの！ソーダのあじがするよ"},
+  {n:"フルーツあめ",e:"\uD83C\uDF4E",p:20,s:2,d:"いちご・メロン・ぶどうあじ！カラフルなあめだよ"},
+  {n:"くるくるヨーヨー",e:"\uD83E\uDE80",p:50,s:2,d:"くるくるまわしてあそぼう！みずのはいったヨーヨーだよ"},
+  {n:"ぷちぷちスライム",e:"\uD83D\uDFE3",p:60,s:2,d:"ぷちぷちのびる！むらさきいろのスライムだよ"},
+  {n:"りんごジュース",e:"\uD83E\uDDC3",p:40,s:2,d:"あまずっぱいりんごのあじ！つめたくてうまいよ"},
+  {n:"ミニけん玉",e:"\uD83D\uDD34",p:80,s:2,d:"てのひらサイズのけん玉！たまをけんにさしてみよう"}
 ];
 var COINS = [{v:1,c:"c1"},{v:5,c:"c5"},{v:10,c:"c10"},{v:50,c:"c50"},{v:100,c:"c100"},{v:500,c:"c500"}];
 var LEVELS = [
@@ -352,7 +362,7 @@ function renderShelves() {
   a.innerHTML = ""; b.innerHTML = "";
   ITEMS.forEach(function(item, i) {
     var el = document.createElement("div"); el.className = "item";
-    el.innerHTML = '<span class="item-e">' + item.e + '</span><span class="item-n">' + item.n + '</span><span class="item-p">' + item.p + 'えん</span>';
+    el.innerHTML = '<div class="item-emoji-wrap"><span class="item-e">' + item.e + '</span><div class="item-desc">' + item.d + '</div></div><span class="item-n">' + item.n + '</span><span class="item-p">' + item.p + 'えん</span>';
     el.onclick = function() { addCart(i); };
     (item.s === 1 ? a : b).appendChild(el);
   });
@@ -453,7 +463,7 @@ function goToPay() {
   document.getElementById("ob").classList.remove("show");
   renderTray(); renderW();
   setTimeout(function() {
-    document.getElementById("os").textContent = "いらっしゃい！おかねを えらんでね\u301C";
+    document.getElementById("os").innerHTML = "いらっしゃい！<br>おかねを えらんでね\u301C";
     document.getElementById("ob").classList.add("show");
   }, 400);
 }
