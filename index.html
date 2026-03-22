@@ -66,7 +66,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
 .cart-items{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
 .cart-item{display:flex;align-items:center;gap:6px;font-size:clamp(12px,2vw,15px);color:#5A4030;padding:5px 7px;background:#FFF3E5;border-radius:6px;cursor:pointer;transition:background 0.15s;flex-shrink:0}
 .cart-item:hover{background:#FFE0C4}
-.cart-item .ci-x{color:#caa;font-size:12px;margin-left:auto;padding:2px}
+.cart-item .ci-n{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:clamp(10px,1.6vw,12px)}
+.cart-item .ci-p{color:#D4451A;font-weight:600;font-size:clamp(10px,1.6vw,12px);white-space:nowrap}
+.cart-item .ci-x{color:#caa;font-size:12px;padding:2px;flex-shrink:0}
 .total-box{background:#D4451A;border-radius:10px;padding:8px 10px;text-align:center}
 .total-label{font-size:clamp(10px,1.5vw,12px);color:#FFD0B8;font-weight:500}
 .total-val{font-size:clamp(20px,3.5vw,28px);font-weight:700;color:#fff}
@@ -79,9 +81,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
 @keyframes btnPulse{0%,100%{box-shadow:0 3px 8px rgba(212,69,26,0.3)}50%{box-shadow:0 3px 16px rgba(212,69,26,0.5)}}
 
 /* Wallet */
-.wallet-area{background:#6B3A1F;padding:10px 16px 8px;display:flex;align-items:center;gap:12px;position:relative;flex-shrink:0;border-radius:12px 12px 0 0}
-.wallet-flap{position:absolute;top:-10px;left:0;right:0;height:12px;background:#7D4A2A;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center}
-.wallet-flap span{font-size:9px;color:#D4A76A;letter-spacing:2px;font-weight:500}
+.wallet-area{background:#6B3A1F;padding:10px 16px 10px;display:flex;align-items:center;gap:12px;position:relative;flex-shrink:0;border-top:3px solid #D4A76A;margin-top:8px}
+.wallet-flap{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.wallet-flap span{font-size:11px;color:#D4A76A;letter-spacing:1px;font-weight:600}
 .wallet-label{font-size:11px;color:#D4A76A;font-weight:500;min-width:56px;text-align:center}
 .coins-row{flex:1;display:flex;gap:clamp(4px,1vw,8px);align-items:center;justify-content:center;flex-wrap:wrap}
 .coin{border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.12s;font-weight:600;user-select:none;position:relative}
@@ -126,7 +128,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
 .tc.c50{background:linear-gradient(145deg,#F0F0F0,#C8C8C8);color:#444;border:1.5px solid #B8B8B8}
 .tc.c100{background:linear-gradient(145deg,#F4F4F4,#D0D0D0);color:#333;border:1.5px solid #C0C0C0}
 .tc.c500{background:linear-gradient(145deg,#F8EE9C,#D8C860);color:#4A3A10;border:1.5px solid #C8B840}
-.tray-sum{font-size:clamp(14px,2.5vw,18px);font-weight:600;color:#FFF3E5}
+.tray-sum{font-size:clamp(14px,2.5vw,18px);font-weight:600;color:#5A4030}
 .tray-sum .ok{color:#66BB6A}
 .tray-sum .over{color:#EF5350}
 .tray-sum .warm{color:#FFC107}
@@ -195,14 +197,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
     <div class="side-panel">
       <div class="cart"><div class="cart-title">🛒 おかいものカゴ</div><div class="cart-items" id="ci"></div></div>
       <div class="total-box"><div class="total-label">ごうけい</div><div class="total-val" id="tv">0えん</div></div>
-      <button class="buy-btn" id="bb" disabled onclick="goToPay()">おかいけいへ すすむ ➜</button>
+      <button class="buy-btn" id="bb" disabled onclick="goToPay()">おかいけい ➜</button>
     </div>
   </div>
 
   <div id="payGuide" class="step-guide hidden"><span class="step-icon">💰</span>おさいふから おかねを タップして トレイにのせよう！</div>
   <div id="payV" class="shop-area hidden">
     <div class="pay-back">
-      <button class="pay-back-btn" onclick="goToShop()">← もどる</button>
+      <button class="pay-back-btn" onclick="goToShop()">◀ もどる</button>
     </div>
     <div class="pay-center">
       <div class="label">おかいもの</div>
@@ -219,7 +221,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
   </div>
 
   <div class="wallet-area">
-    <div class="wallet-flap"><span>おさいふ</span></div>
+    <div class="wallet-flap"><span>👛 おさいふ</span></div>
     <div class="wallet-label" id="wt">500えん</div>
     <div class="coins-row" id="cr"></div>
   </div>
@@ -285,8 +287,9 @@ var LEVELS = [
 ];
 
 // ===== STATE =====
-var W = {}, cart = [], tray = [], mode = "shop", streak = 0;
+var W = {}, cart = [], tray = [], mode = "shop";
 var save = loadSave();
+var streak = save.streak || 0;
 
 function defaultSave() { return { perfectTotal: 0, bestStreak: 0, level: 0, collection: [], lastLoginDate: null, bonusMoney: 0 }; }
 function loadSave() {
@@ -297,8 +300,13 @@ function writeSave() { try { localStorage.setItem('dagashi_save', JSON.stringify
 
 function getLvl() { return LEVELS[save.level] || LEVELS[0]; }
 function checkLevelUp() {
+  var oldLevel = save.level;
   for (var i = LEVELS.length - 1; i >= 0; i--) {
     if (save.perfectTotal >= LEVELS[i].need) { save.level = i; break; }
+  }
+  if (save.level > oldLevel) {
+    W = createWalletForLevel();
+    save.wallet = W;
   }
 }
 
@@ -333,22 +341,36 @@ function startGame() {
   renderShelves(); renderW(); updWT(); renderCart(); renderTray(); updHeader();
 }
 
-function initWallet() {
+function createWalletForLevel() {
   var lvl = getLvl();
-  W = {};
+  var w = {};
   var b = lvl.budget + (save.bonusMoney || 0);
   if (save.level === 0) {
-    W[50] = 1; W[10] = 5; W[5] = 0; W[1] = 0; W[100] = 0; W[500] = 0;
+    w[50] = 1; w[10] = 5; w[5] = 0; w[1] = 0; w[100] = 0; w[500] = 0;
     var rest = b - 100;
     var coins = [500,100,50,10,5,1];
-    coins.forEach(function(c){ W[c] = (W[c] || 0) + Math.floor(rest / c); rest = rest % c; });
+    coins.forEach(function(c){ w[c] = (w[c] || 0) + Math.floor(rest / c); rest = rest % c; });
   } else {
     var coins = [500,100,50,10,5,1];
-    coins.forEach(function(c){ W[c] = Math.floor(b / c); b = b % c; });
-    if (W[100] > 2) { W[100] -= 1; W[50] += 2; }
-    if (W[50] > 2) { W[50] -= 1; W[10] += 5; }
-    if (W[10] > 3) { W[10] -= 2; W[5] += 2; W[1] += 10; }
+    coins.forEach(function(c){ w[c] = Math.floor(b / c); b = b % c; });
+    if (w[100] > 2) { w[100] -= 1; w[50] += 2; }
+    if (w[50] > 2) { w[50] -= 1; w[10] += 5; }
+    if (w[10] > 3) { w[10] -= 2; w[5] += 2; w[1] += 10; }
   }
+  return w;
+}
+function initWallet() {
+  if (save.wallet) {
+    W = save.wallet;
+  } else {
+    W = createWalletForLevel();
+    save.wallet = W;
+    writeSave();
+  }
+}
+function saveWallet() {
+  save.wallet = W;
+  writeSave();
 }
 
 function updHeader() {
@@ -370,7 +392,6 @@ function renderShelves() {
 
 function addCart(i) {
   var t = 0; cart.forEach(function(c) { t += ITEMS[c].p; });
-  if (t + ITEMS[i].p > getLvl().budget) return;
   cart.push(i);
   seCartAdd();
   renderCart();
@@ -381,16 +402,26 @@ function renderCart() {
   var el = document.getElementById("ci"); el.innerHTML = "";
   cart.forEach(function(idx, ci) {
     var d = document.createElement("div"); d.className = "cart-item";
-    d.innerHTML = '<span>' + ITEMS[idx].e + '</span><span>' + ITEMS[idx].n + '</span><span class="ci-x">\u2715</span>';
+    d.innerHTML = '<span>' + ITEMS[idx].e + '</span><span class="ci-n">' + ITEMS[idx].n + '</span><span class="ci-p">' + ITEMS[idx].p + 'えん</span><span class="ci-x">\u2715</span>';
     d.onclick = function() { cart.splice(ci, 1); renderCart(); };
     el.appendChild(d);
   });
   var t = 0; cart.forEach(function(c) { t += ITEMS[c].p; });
   document.getElementById("tv").textContent = t + "えん";
   document.getElementById("bb").disabled = cart.length === 0;
-  document.getElementById("shopGuide").innerHTML = cart.length === 0
-    ? '<span class="step-icon">🍭</span>すきな おかしを タップして えらぼう！'
-    : '<span class="step-icon">🛒</span>えらんだら「おかいけいへ すすむ」を おそう！ ⬇';
+  var walletTotal = 0; COINS.forEach(function(c) { walletTotal += c.v * (W[c.v] || 0); });
+  if (walletTotal === 0 && cart.length === 0) {
+    var tips = [
+      "おこづかいを ためて また あそびにきてね！",
+      "あした ログインすると +50えん もらえるよ！",
+      "れんぞく ぴったりで ボーナスコインが もらえるよ！"
+    ];
+    document.getElementById("shopGuide").innerHTML = '<span class="step-icon">💰</span>' + tips[Math.floor(Math.random() * tips.length)];
+  } else {
+    document.getElementById("shopGuide").innerHTML = cart.length === 0
+      ? '<span class="step-icon">🍭</span>すきな おかしを タップして えらぼう！'
+      : '<span class="step-icon">🛒</span>えらんだら「おかいけい ➜」を おそう！ ⬇';
+  }
 }
 
 function renderW() {
@@ -403,6 +434,7 @@ function renderW() {
       if (mode === "pay" && W[c.v] > 0) {
         W[c.v]--; tray.push(c.v);
         seCharin(c.v);
+        saveWallet();
         renderW(); renderTray(); updWT(); updOb();
       }
     };
@@ -421,7 +453,7 @@ function renderTray() {
   tray.forEach(function(val, i) {
     var cls = ""; COINS.forEach(function(c) { if (c.v === val) cls = c.c; });
     var d = document.createElement("div"); d.className = "tc " + cls; d.textContent = val;
-    d.onclick = function() { tray.splice(i, 1); W[val]++; renderW(); renderTray(); updWT(); updOb(); };
+    d.onclick = function() { tray.splice(i, 1); W[val]++; saveWallet(); renderW(); renderTray(); updWT(); updOb(); };
     el.appendChild(d);
   });
   var sum = 0; tray.forEach(function(v) { sum += v; });
@@ -450,13 +482,18 @@ function updOb() {
 }
 
 function goToPay() {
+  var price = 0; cart.forEach(function(c) { price += ITEMS[c].p; });
+  var walletTotal = 0; COINS.forEach(function(c) { walletTotal += c.v * (W[c.v] || 0); });
+  if (walletTotal < price) {
+    showNotEnough(price, walletTotal);
+    return;
+  }
   mode = "pay";
   document.getElementById("shopV").classList.add("hidden");
   document.getElementById("shopGuide").classList.add("hidden");
   document.getElementById("payV").classList.remove("hidden");
   document.getElementById("payGuide").classList.remove("hidden");
   tray = [];
-  var price = 0; cart.forEach(function(c) { price += ITEMS[c].p; });
   document.getElementById("pp").textContent = price + "えん";
   var pi = document.getElementById("pi"); pi.innerHTML = "";
   cart.forEach(function(idx) { pi.innerHTML += '<span style="font-size:28px;">' + ITEMS[idx].e + '</span>'; });
@@ -468,8 +505,22 @@ function goToPay() {
   }, 400);
 }
 
+function showNotEnough(price, walletTotal) {
+  var box = document.getElementById("rb");
+  var h = '<div class="emo">👵</div>';
+  h += '<div class="msg">おっと、<br>おかねが たりないみたいだね</div>';
+  h += '<div class="sub">おさいふには <b style="color:#D4451A;font-size:16px">' + walletTotal + 'えん</b> あるよ<br>カゴの おかしを へらしてみようか</div>';
+  h += '<button onclick="closeNotEnough()">もどって えらびなおす</button>';
+  box.innerHTML = h;
+  document.getElementById("ov").classList.remove("hidden");
+}
+function closeNotEnough() {
+  document.getElementById("ov").classList.add("hidden");
+}
+
 function goToShop() {
   mode = "shop"; tray.forEach(function(v) { W[v]++; }); tray = [];
+  saveWallet();
   document.getElementById("shopV").classList.remove("hidden");
   document.getElementById("shopGuide").classList.remove("hidden");
   document.getElementById("payV").classList.add("hidden");
@@ -509,17 +560,33 @@ function confirmPay() {
     streak = 0;
     seResult();
   }
+  save.streak = streak;
 
   checkLevelUp();
-  writeSave();
+  saveWallet();
 
+  var BONUSES = [{at:10,amount:100},{at:5,amount:50},{at:3,amount:10}];
   var box = document.getElementById("rb"), h = "";
   if (perfect) {
-    var st = ""; for (var i = 0; i < Math.min(streak, 5); i++) st += "<span>\u2B50</span>";
+    var st = ""; for (var i = 0; i < Math.min(streak, 10); i++) st += "<span>\u2B50</span>";
     h = '<div class="emo">\uD83C\uDF89</div><div class="msg">\u3074\u3063\u305F\u308A\uFF01\u3059\u3054\u3044\uFF01</div>';
     if (streak >= 2) h += '<div class="stars">' + st + '</div>';
     h += '<div class="sub">\u304A\u3064\u308A\u306A\u3057\u3067 \u304A\u304B\u3044\u3082\u306E \u3067\u304D\u305F\u3088\uFF01</div>';
-    if (streak >= 3) { h += '<div class="bonus">\uD83C\uDF1F ' + streak + '\u308C\u3093\u305E\u304F \u3074\u3063\u305F\u308A\uFF01 \u30DC\u30FC\u30CA\u30B9\u30B3\u30A4\u30F3 +10\u3048\u3093 \uD83C\uDF1F</div>'; W[10] = (W[10] || 0) + 1; }
+    var bonusGiven = false;
+    for (var bi = 0; bi < BONUSES.length; bi++) {
+      if (streak >= BONUSES[bi].at && streak % BONUSES[bi].at === 0) {
+        var ba = BONUSES[bi].amount;
+        h += '<div class="bonus">\uD83C\uDF1F ' + streak + '\u308C\u3093\u305E\u304F \u3074\u3063\u305F\u308A\uFF01 \u30DC\u30FC\u30CA\u30B9\u30B3\u30A4\u30F3 +' + ba + '\u3048\u3093 \uD83C\uDF1F</div>';
+        var rem = ba;
+        [100,50,10,5,1].forEach(function(v) { var n = Math.floor(rem / v); if (n > 0) { W[v] = (W[v] || 0) + n; rem -= v * n; } });
+        bonusGiven = true;
+        break;
+      }
+    }
+    if (!bonusGiven && streak >= 3) {
+      h += '<div class="bonus">\uD83C\uDF1F ' + streak + '\u308C\u3093\u305E\u304F \u3074\u3063\u305F\u308A\uFF01 \u30DC\u30FC\u30CA\u30B9\u30B3\u30A4\u30F3 +10\u3048\u3093 \uD83C\uDF1F</div>';
+      W[10] = (W[10] || 0) + 1;
+    }
   } else {
     h = '<div class="emo">\u2728</div><div class="msg">\u304A\u304B\u3044\u3082\u306E \u3067\u304D\u305F\u3088\uFF01</div><div class="sub">\u304A\u3064\u308A <b style="color:#D4451A;font-size:16px">' + change + '\u3048\u3093</b> \u3082\u3069\u3063\u3066\u304D\u305F\u3088</div>';
     var ch = change;
@@ -528,6 +595,7 @@ function confirmPay() {
 
   h += '<button onclick="resetGame()">\u3064\u304E\u306E \u304A\u304B\u3044\u3082\u306E</button>';
   box.innerHTML = h;
+  saveWallet();
   document.getElementById("ov").classList.remove("hidden");
   spawnP(perfect);
   cart = []; tray = [];
