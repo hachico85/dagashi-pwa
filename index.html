@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="だがしやマスター">
@@ -34,7 +34,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
 .app.active{display:flex}
 
 /* Header bar */
-.hbar{background:#8B6B4A;padding:4px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hbar{background:#8B6B4A;padding:4px 16px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .hbar-title{font-size:13px;font-weight:600;color:#F5E6D0;letter-spacing:1px}
 .hbar-stats{display:flex;gap:12px;align-items:center}
 .hbar-stat{font-size:11px;color:#D4A76A;display:flex;align-items:center;gap:4px}
@@ -46,7 +46,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
 .step-guide .step-icon{margin-right:4px}
 
 /* Shop area */
-.shop-area{flex:1;display:flex;padding:8px 12px;gap:10px;min-height:0}
+.shop-area{flex:1;display:flex;padding:8px 12px;padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));gap:10px;min-height:0}
 .shelf{flex:1;background:#8B6B4A;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:4px;box-shadow:inset 0 2px 0 #7A5C3E;overflow:visible}
 .shelf-label{font-size:clamp(12px,2vw,15px);font-weight:500;color:#F5E6D0;text-align:center;letter-spacing:1px}
 .shelf-items{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;overflow:visible}
@@ -81,7 +81,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
 @keyframes btnPulse{0%,100%{box-shadow:0 3px 8px rgba(212,69,26,0.3)}50%{box-shadow:0 3px 16px rgba(212,69,26,0.5)}}
 
 /* Wallet */
-.wallet-area{background:#6B3A1F;padding:10px 16px 10px;display:flex;align-items:center;gap:12px;position:relative;flex-shrink:0;border-top:3px solid #D4A76A;margin-top:8px}
+.wallet-area{background:#6B3A1F;padding:10px 16px 10px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));display:flex;align-items:center;gap:12px;position:relative;flex-shrink:0;border-top:3px solid #D4A76A;margin-top:8px}
 .wallet-flap{display:flex;align-items:center;gap:4px;flex-shrink:0}
 .wallet-flap span{font-size:11px;color:#D4A76A;letter-spacing:1px;font-weight:600}
 .wallet-label{font-size:11px;color:#D4A76A;font-weight:500;min-width:56px;text-align:center}
@@ -168,6 +168,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2D2D2D;font-family:
 
 /* Mobile responsive - small screens */
 @media (max-width:768px) {
+  .side-panel{width:clamp(120px,22vw,180px);min-width:0}
+  .shop-area{gap:6px;padding:6px 8px;padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}
   #payV{flex-direction:column;padding:8px 0 !important;gap:0 !important}
   .pay-back{padding:0;width:100%;justify-content:flex-start;padding:0 12px}
   .pay-back-btn{writing-mode:unset;min-height:auto;padding:10px 12px;width:auto}
