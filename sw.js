@@ -1,7 +1,8 @@
-var CACHE_NAME = 'dagashi-v4';
+var CACHE_NAME = 'dagashi-v5';
 var urlsToCache = [
   './',
   './index.html',
+  './items.json',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
